@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/gen2brain/beeep"
 	"github.com/gocolly/colly"
 )
 
@@ -50,9 +51,17 @@ func main() {
 		return
 	}
 
-	if unavailable {
-		fmt.Println("The page has the 'Currently Unavailable' label.")
+	if !unavailable {
+		fmt.Println("The 'Currently Unavailable' label is not present on the page. The product may be available!")
+		err := beeep.Notify("Product Availability", "The product may be available!", "")
+		if err != nil {
+			logger.Printf("Error sending notification: %v\n", err)
+		}
 	} else {
-		fmt.Println("The 'Currently Unavailable' label is not present on the page.")
+		fmt.Println("The page has the 'Currently Unavailable' label.")
+		err := beeep.Notify("Product Availability", "The product is unavailable.", "")
+		if err != nil {
+			logger.Printf("Error sending notification: %v\n", err)
+		}
 	}
 }
