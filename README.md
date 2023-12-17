@@ -80,7 +80,3 @@ You can customize the scraper by editing the `main.go` file. For instance, you c
 ## Contributing
 
 Contributions to the PlayStation Portal Scraper are welcome. Please ensure that your code adheres to the existing style and that all tests pass.
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
