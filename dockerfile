@@ -8,7 +8,6 @@ WORKDIR /app
 COPY . .
 
 # Fetch dependencies
-RUN go mod init playstation-scraper
 RUN go get -d -v ./...
 
 # Build the Go app
