@@ -1,15 +1,21 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"strings"
 	"time"
 
-	"github.com/gen2brain/beeep"
 	"github.com/gocolly/colly"
 )
+
+type WebhookRequest struct {
+	Value1 string `json:"value1"`
+}
 
 func main() {
 	for {
@@ -54,19 +60,43 @@ func main() {
 		}
 
 		if !unavailable {
-			fmt.Println("The 'Currently Unavailable' label is not present on the page. The product may be available!")
-			err := beeep.Notify("Product Availability", "The product may be available!", "")
-			if err != nil {
-				logger.Printf("Error sending notification: %v\n", err)
-			}
+			message := "The 'Currently Unavailable' label is not present on the page. The product may be available!"
+			fmt.Println(message)
+			sendWebhookNotification("portal_available", message)
 		} else {
-			fmt.Println("The page has the 'Currently Unavailable' label.")
-			err := beeep.Notify("Product Availability", "The product is unavailable.", "")
-			if err != nil {
-				logger.Printf("Error sending notification: %v\n", err)
-			}
+			fmt.Println("The page has the 'Currently Unavailable' label. The product is not available.")
+			prettyDate := time.Now().Format("Monday, January 2, 2006 3:04:05 PM MST")
+			fmt.Printf("Last checked: %s\n", prettyDate)
 		}
 
 		time.Sleep(1 * time.Hour)
 	}
+}
+
+func sendWebhookNotification(event string, message string) {
+	keyInEnv := os.Getenv("IFTTT_WEBHOOK_KEY")
+	if keyInEnv == "" {
+		fmt.Println("IFTTT_WEBHOOK_KEY environment variable is not set. Skipping webhook notification.")
+		return
+	}
+
+	webhookURL := "https://maker.ifttt.com/trigger/" + event + "/with/key/" + keyInEnv
+
+	data := WebhookRequest{
+		Value1: message,
+	}
+	requestBody, err := json.Marshal(data)
+	if err != nil {
+		fmt.Printf("Error: %s", err)
+		return
+	}
+
+	resp, err := http.Post(webhookURL, "application/json", bytes.NewBuffer(requestBody))
+	if err != nil {
+		fmt.Printf("Error sending webhook: %s", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	fmt.Println("Webhook notification sent.")
 }
