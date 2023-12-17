@@ -2,13 +2,29 @@
 
 ## Overview
 
-The PlayStation Portal Scraper is a Go-based tool designed to monitor the availability of products on the PlayStation Direct website. It checks the page for the "Currently Unavailable" label and notifies the user through a desktop notification when the product appears to be available.
+The PlayStation Portal Scraper is a Go-based tool designed to monitor the availability of products on the PlayStation Direct website. It checks the page for the "Currently Unavailable" label and notifies the user through a webhook when the product appears to be available.
 
 ## Prerequisites
 
--   Go (1.15 or later)
--   Docker
--   Basic knowledge of Go programming and Docker
+- Go (1.15 or later)
+- Docker
+- Basic knowledge of Go programming and Docker
+- An IFTTT account for setting up the webhook
+
+## Webhook Setup with IFTTT
+
+Before running the scraper, set up a webhook with IFTTT:
+
+1. **Create an IFTTT Account**: If you don't already have one, sign up at [IFTTT](https://ifttt.com/).
+
+2. **Create a New Applet**:
+   - Go to "Create" and then click on "If This Then That".
+   - For the "This" part, choose "Webhooks" and then "Receive a web request".
+   - Name the event (e.g., `portal_available`).
+   - For the "That" part, choose the service you want to use for notifications (e.g., Email, SMS).
+   - Configure the action to your preference (e.g., set the message text, subject).
+
+3. **Get Your Webhook Key**: Go to the [Webhooks service page](https://ifttt.com/maker_webhooks), click on "Documentation", and note your unique webhook key.
 
 ## Setup
 
@@ -43,22 +59,23 @@ go run main.go
 
 ### Option 2: Running in Docker
 
-To run the scraper in a Docker container, execute:
+To run the scraper in a Docker container, pass the IFTTT webhook key as an environment variable:
 
 ```bash
-docker run --rm playstation-scraper
+docker run --rm -e IFTTT_WEBHOOK_KEY=your_webhook_key playstation-scraper
 ```
 
-The scraper is set to run automatically every hour to check the product availability.
+Replace `your_webhook_key` with your actual IFTTT webhook key. The scraper is set to run automatically every hour to check the product availability.
 
 ## Customization
 
-You can customize the scraper by editing the `main.go` file. For instance, you can change the URL to monitor a different product or modify the notification logic.
+You can customize the scraper by editing the `main.go` file. For instance, you can change the URL to monitor a different product, adjust the notification logic, or change the frequency of checks.
 
 ## Troubleshooting
 
--   Ensure that Go and Docker are correctly installed and configured on your system.
--   If the scraper does not send notifications, check that your system allows desktop notifications from applications.
+- Ensure that Go and Docker are correctly installed and configured on your system.
+- If using Docker, ensure the `IFTTT_WEBHOOK_KEY` environment variable is set correctly.
+- If the scraper does not send notifications, check the configuration of your webhook service.
 
 ## Contributing
 
