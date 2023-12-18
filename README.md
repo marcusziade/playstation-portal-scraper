@@ -62,7 +62,7 @@ go run main.go
 To run the scraper in a Docker container, pass the IFTTT webhook key as an environment variable:
 
 ```bash
-docker run --rm -e IFTTT_WEBHOOK_KEY=your_webhook_key playstation-scraper
+docker run --restart unless-stopped -e IFTTT_WEBHOOK_KEY=your_webhook_key playstation-scraper
 ```
 
 Replace `your_webhook_key` with your actual IFTTT webhook key. The scraper is set to run automatically every hour to check the product availability.
